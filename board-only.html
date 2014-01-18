@@ -1,0 +1,48 @@
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>Position Object Example</title>
+  <base href="http://chessboardjs.com/" />
+
+  <!-- Bootstrap core CSS -->
+    <link href="C:\Users\Deepak\Documents\GitHub\chess-board-site\dist\css\bootstrap.css" rel="stylesheet">
+	
+    <!-- Custom styles for this template -->
+    <link href="C:\Users\Deepak\Documents\GitHub\chess-board-site\dist\css\jumbotron-narrow.css" rel="stylesheet">
+
+	<!-- chessboard css-->
+	<link rel="stylesheet" href="C:\Users\Deepak\Documents\GitHub\chess-board-site\css\chessboard.css" />
+</head>
+<body>
+<p><a href="examples#1003">&larr; Back to all examples.</a></p>
+
+<p>Pass a <a href="docs#position_object">Position Object</a> as the second argument to initialize the board to a specific position.
+</p>
+
+<!-- start example HTML --->
+<div id="board" style="width: 400px"></div>
+<!-- end example HTML --->
+
+<script src="js/json3.min.js"></script>
+<script src="js/jquery-1.10.1.min.js"></script>
+<script src="js/chessboard.js"></script>
+<script>
+var init = function() {
+
+//--- start example JS ---
+var position = {
+  d6: 'bK',
+  d4: 'wP',
+  e4: 'wK'
+};
+var board = new ChessBoard('board', position);
+//--- end example JS ---
+
+}; // end init()
+$(document).ready(init);
+</script>
+</body>
+</html>
