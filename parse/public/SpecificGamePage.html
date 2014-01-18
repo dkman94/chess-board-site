@@ -23,9 +23,9 @@
 <p>Pass a <a href="docs#position_object">Position Object</a> as the second argument to initialize the board to a specific position.
 </p>
 
-<!-- start example HTML --->
-<div id="board" style="width: 400px"></div>
-<!-- end example HTML --->
+
+<div id="board" style="width: 1000px"></div>
+
 
 <script src="js/json3.min.js"></script>
 <script src="js/jquery-1.10.1.min.js"></script>
@@ -35,11 +35,41 @@ var init = function() {
 
 //--- start example JS ---
 var position = {
-  d6: 'bK',
+  a1: 'wR',
+  b3: 'wP',
+  c3: 'wB',
   d4: 'wP',
-  e4: 'wK'
+  e3: 'wP',
+  d1: 'wQ',
+  e1: 'wK',
+  f2: 'wP',
+  f3: 'wN',
+  f1: 'wB',
+  g2: 'wP',
+  h2: 'wP',
+  h1: 'wR',
+  a5: 'bP',
+  a8: 'bR',
+  b5: 'bP',
+  b7: 'bB',
+  b8: 'bN',
+  c4: 'bP',
+  d8: 'bQ',
+  e6: 'bP',
+  e8: 'bK',
+  f7: 'bP',
+  g8: 'bN',
+  g7: 'bP',
+  h7: 'bP',
+  h8: 'bR',
 };
-var board = new ChessBoard('board', position);
+
+var cfg = {
+  draggable: true,
+  dropOffBoard: 'snapback', // this is the default
+  position :'start'
+};
+var board = new ChessBoard('board', cfg);
 //--- end example JS ---
 
 }; // end init()
