@@ -1,7 +1,4 @@
-
-
-
- // Load the SDK asynchronously
+// Load the SDK asynchronously
   (function(d){
    var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
    if (d.getElementById(id)) {return;}
@@ -9,44 +6,95 @@
    js.src = "//connect.facebook.net/en_US/all.js";
    ref.parentNode.insertBefore(js, ref);
   }(document));
-	   
+        
 Parse.initialize("yfuOWmQDgclXygaWFIh8zqy9ByYlXuQt5HzTt2rf", "pd8p8lHbAmHuF8HSZx032BvbKuS7a1ugCHFQ5Raj");
  window.fbAsyncInit = function() {
   Parse.FacebookUtils.init({
-    appId      : '341999395937907', // Facebook App ID
+    appId : '341999395937907', // Facebook App ID
     channelUrl : 'solochess.parseapp.com/channel.html', // Channel File
-    status     : true, // check login status
-    cookie     : true, // enable cookies to allow Parse to access the session
-    xfbml      : true , // parse XFBML
+    status : true, // check login status
+    cookie : true, // enable cookies to allow Parse to access the session
+    xfbml : true , // parse XFBML
 
   });
   // Here we subscribe to the auth.authResponseChange JavaScript event. This event is fired
   // for any authentication related change, such as login, logout or session refresh. This means that
-  // whenever someone who was previously logged out tries to log in again, the correct case below 
-  // will be handled. 
+  // whenever someone who was previously logged out tries to log in again, the correct case below
+  // will be handled.
   FB.Event.subscribe('auth.authResponseChange', function(response) {
-    // Here we specify what we do with the response anytime this event occurs. 
+    // Here we specify what we do with the response anytime this event occurs.
     if (response.status === 'connected') {
       // The response object is returned with a status field that lets the app know the current
-      // login status of the person. In this case, we're handling the situation where they 
+      // login status of the person. In this case, we're handling the situation where they
       // have logged in to the app.
-      link();
+      alert("status is connected");
+	  var user = new Parse.User();
+	  
+	  FB.api("/me", {fields: "name"}, function(data) {
+		console.log(data);
+		window.localStorage.setItem("facebook", data.name);
+	 });
+	 var obj = window.localStorage.getItem("facebook");
+	 
+	user.set("username", obj);
+	user.set("Points", 0);
+	user.set("password", "my pass"); //pass not needed. use facebook pass.
+	
+		if (!user.existed())
+		{
+				user.signUp(null, {
+				success: function(user) {
+			// Hooray! Let them use the app now.
+		},
+			error: function(user, error) {
+			// Show the error message somewhere and let the user try again.
+			alert("Error: " + error.code + " " + error.message);
+		}
+});
+		
+		
+		
+		}
     } else if (response.status === 'not_authorized') {
       // In this case, the person is logged into Facebook, but not into the app, so we call
-      // FB.login() to prompt them to do so. 
-      // In real-life usage, you wouldn't want to immediately prompt someone to login 
+      // FB.login() to prompt them to do so.
+      // In real-life usage, you wouldn't want to immediately prompt someone to login
       // like this, for two reasons:
-      // (1) JavaScript created popup windows are blocked by most browsers unless they 
+      // (1) JavaScript created popup windows are blocked by most browsers unless they
       // result from direct interaction from people using the app (such as a mouse click)
       // (2) it is a bad experience to be continually prompted to login upon page load.
-      Parse.FacebookUtils.login();
+	  alert("status is not authorized");
+      Parse.FacebookUtils.logIn("email", {
+		success: function(user) {
+			if (!user.existed()) {
+				alert("User signed up and logged in through Facebook!");
+		} else {
+			alert("User logged in through Facebook!");
+		}
+	},
+	error: function(user, error) {
+		alert("User cancelled the Facebook login or did not fully authorize.");
+	}
+	});
     } else {
-      // In this case, the person is not logged into Facebook, so we call the login() 
+      // In this case, the person is not logged into Facebook, so we call the login()
       // function to prompt them to do so. Note that at this stage there is no indication
       // of whether they are logged into the app. If they aren't then they'll see the Login
-      // dialog right after they log in to Facebook. 
+      // dialog right after they log in to Facebook.
       // The same caveats as above apply to the FB.login() call here.
-      Parse.FacebookUtils.login();
+	  alert("status is logged out");
+      Parse.FacebookUtils.logIn("email",{
+		success: function(user) {
+			if (!user.existed()) {
+			alert("User signed up and logged in through Facebook!");
+			} else {
+		alert("User logged in through Facebook!");
+		}
+	},
+	error: function(user, error) {
+		alert("User cancelled the Facebook login or did not fully authorize.");
+	}
+	});
     }
   });
   };
@@ -55,27 +103,4 @@ Parse.initialize("yfuOWmQDgclXygaWFIh8zqy9ByYlXuQt5HzTt2rf", "pd8p8lHbAmHuF8HSZx
 
 
 
-function link()
-{
-	//If you want to associate an existing Parse.User to a Facebook account, you can link it like so:
-	if (!Parse.FacebookUtils.isLinked(user)) {
-		Parse.FacebookUtils.link(user, null, {
-		success: function(user) {
-      alert("Woohoo, user logged in with Facebook!");
-		},
-    error: function(user, error) {
-      alert("User cancelled the Facebook login or did not fully authorize.");
-    }
-  });
-function testAPI() {
-    console.log('Welcome!  Fetching your information.... ');
-    FB.api('/me', function(response) {
-      console.log('Good to see you, ' + response.name + '.');
-    });
-  }
-}
-}
-  
-  
-
-
+    
