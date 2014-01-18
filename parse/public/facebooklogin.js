@@ -66,7 +66,11 @@ function link()
     error: function(user, error) {
       alert("User cancelled the Facebook login or did not fully authorize.");
     }
-  });
+  }
+
+  
+  
+  );
 function testAPI() {
     console.log('Welcome!  Fetching your information.... ');
     FB.api('/me', function(response) {
