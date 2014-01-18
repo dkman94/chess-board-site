@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "SoloChess": {
+            "applicationId": "yfuOWmQDgclXygaWFIh8zqy9ByYlXuQt5HzTt2rf", 
+            "masterKey": "Mt1D5keSjdM1U1jmFoXTqSQlPn2Pyagoah3jXYM3"
+        }, 
+        "_default": {
+            "link": "SoloChess"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.2.16"
+    }
+}

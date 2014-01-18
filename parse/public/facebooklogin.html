@@ -1,11 +1,14 @@
 <html>
-<head></head>
+<head>
+
+<script src="http://connect.facebook.net/en_US/all.js"></script>
+</head>
 <body>
 <div id="fb-root"></div>
 <script>
   window.fbAsyncInit = function() {
   FB.init({
-    appId      : 'yfuOWmQDgclXygaWFIh8zqy9ByYlXuQt5HzTt2rf',
+    appId      : '{yfuOWmQDgclXygaWFIh8zqy9ByYlXuQt5HzTt2rf}',
     status     : true, // check login status
     cookie     : true, // enable cookies to allow the server to access the session
     xfbml      : true  // parse XFBML
@@ -42,16 +45,6 @@
   });
   };
 
-<<<<<<< HEAD
-<p> Login </p>
-<form>
-email: <input type="text" name="firstname"><br>
-password: <input type="text" name="lastname">
-</form>
-
-<a href=gamesPage.html>
-Games</a>
-=======
   // Load the SDK asynchronously
   (function(d){
    var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
@@ -60,7 +53,6 @@ Games</a>
    js.src = "//connect.facebook.net/en_US/all.js";
    ref.parentNode.insertBefore(js, ref);
   }(document));
->>>>>>> origin/zengyifa
 
   // Here we run a very simple test of the Graph API after login is successful. 
   // This testAPI() function is only called in those cases. 
