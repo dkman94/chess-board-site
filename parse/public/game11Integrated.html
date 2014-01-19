@@ -49,9 +49,9 @@
           <ul class="nav navbar-nav">
             <li class="active"><a href="http://solochess.parseapp.com">Home</a></li>
             <li><a href="#about">About</a></li>
-          <li><a href="registration.html">Sign Up</a></li>
- <li><fb:login-button style="display:inline; margin-left:449%;" size="large" autologoutlink="true" max-rows="1" 
-                  onlogin="require('./log').info('onlogin callback')">Login with Facebook</fb:login-button></li>          </ul>
+            <li><a href="registration.html">Sign Up</a></li>
+			<li><div><fb:login-button autologoutlink="true" show-faces="false"  width="500" max-rows="1"></fb:login-button></div></li>
+          </ul>
         </div><!-- /.nav-collapse -->
       </div><!-- /.container -->
     </div><!-- /.navbar -->
@@ -78,9 +78,16 @@
 					<script src="js/jquery-1.10.1.min.js"></script>
 					<script src="js/chessboard.js"></script>
 					<script>
-						var init = function() {
 
-var tempGame = new Chess();
+function truncatePGN(pgn,plyCount) 
+{
+	var tempPGN = pgn.slice(0,pgn.length);
+	var	moves = pgn[13].split(' ');
+	var truncMoves = moves.slice(0,plyCount-1);
+	tempPGN[13] = truncMoves.join(' ') + ' ' + moves[moves.length-1];
+	return tempPGN;
+}
+
 pgn = ['[Event "Casual Game"]',
        '[Site "Berlin GER"]',
        '[Date "1852.??.??"]',
@@ -92,21 +99,40 @@ pgn = ['[Event "Casual Game"]',
        '[ECO "C52"]',
        '[WhiteElo "?"]',
        '[BlackElo "?"]',
-       '[PlyCount "47"]',
+       '[PlyCount "45"]',
        '',
-       '1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Ba5 6.d4 exd4 7.O-O',
-       'd3 8.Qb3 Qf6 9.e5 Qg6 10.Re1 Nge7 11.Ba3 b5 12.Qxb5 Rb8 13.Qa4',
-       'Bb6 14.Nbd2 Bb7 15.Ne4 Qf5 16.Bxd3 Qh5 17.Nf6+ gxf6 18.exf6',
-       'Rg8 19.Rad1 Qxf3 20.Rxe7+ Nxe7 21.Qxd7+ Kxd7 22.Bf5+ Ke8',
-       '23.Bd7+ 1-0'];
-console.log(pgn)
-var whoseMove = 'w';
+       '1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Ba5 6.d4 exd4 7.O-O d3 8.Qb3 Qf6 9.e5 Qg6 10.Re1 Nge7 11.Ba3 b5 12.Qxb5 Rb8 13.Qa4 Bb6 14.Nbd2 Bb7 15.Ne4 Qf5 16.Bxd3 Qh5 17.Nf6+ gxf6 18.exf6 Rg8 19.Rad1 Qxf3 20.Rxe7+ Nxe7 21.Qxd7+ Kxd7 22.Bf5+ Ke8 23.Bd7+ 1-0'];
+
+moves = pgn[13].split(' ');
+fullPlyCount = parseInt(pgn[11].substring(11,13),10);
+
+var init = function(pgnInp,plyCountInp,userCountInp) {
+var tempGame = new Chess();
+
+//fullPGN and plyCount are both inputs.  fullPGN is the game, plyCount
+//is a judgment call for wherever the opening of the game ends
+if (typeof(pgn)==='undefined') userPGN = pgn;
+else userPGN = pgnInp;
+if (typeof(plyCount)==='undefined') plyCount = 6;
+else plyCount = plyCountInp
+if (typeof(userCount)==='undefined') userCount = 6;
+else userCount = userCountInp;
+
+userPGN = truncatePGN(pgn,plyCount)
+
+if(plyCount % 2 === 0){
+	whoseMove = 'b'
+}
+else
+{
+	whoseMove = 'w'
+}
 var board,
   game = new Chess(),
   statusEl = $('#status'),
   fenEl = $('#fen'),
   pgnEl = $('#pgn');
-game.load_pgn(pgn.join('\n'));
+game.load_pgn(userPGN.join('\n'));
 // do not pick up pieces if the game is over
 // only pick up pieces for the side to move
 var onDragStart = function(source, piece, position, orientation) {
@@ -122,8 +148,29 @@ var onChange = function(oldPos, newPos) {
   console.log("Old position: " + ChessBoard.objToFen(oldPos));
   console.log("New position: " + ChessBoard.objToFen(newPos));
   console.log("--------------------");
+  var changed = true;
+  console.log(changed);
+  if(changed == true)
+	{
+		console.log(userCount)
+		var table = document.getElementById("moves-table");
+		 var textbox = document.getElementById("comment-box");
+		 textbox.innerHTML="You played " + truncatePGN(userPGN,userCount)[13].toString() + ". The correct move was " + String(moves[userCount])
+		if(userCount == 1)
+		{
+		  var row = table.insertRow(1);
+		  var cell1 = row.insertCell(0)
+		  var cell2 = row.insertCell(1);
+		  var cell3 = row.insertCell(2);
+		  cell1.innerHTML = "1";
+		  cell2.innerHTML = "NEW CELL1";
+		  cell3.innerHTML = "NEW CELL2";
+		  userCount++;
+	}
+	userCount++;
+		
+	}
 };
-
 var onDrop = function(source, target) {
   // see if the move is legal
   var move = game.move({
@@ -187,10 +234,7 @@ var cfg = {
   onChange: onChange
 };
 var board = new ChessBoard('board', cfg);
-$('#startPosBtn').on('click', board.start);
-$('#lastPosBtn').on('click', board.lastPos);
-$('#nextPosBtn').on('click', board.nextPos);
-$('#endPosBtn').on('click', board.end);
+
 if (whoseMove === 'b') {
 	board.orientation('black');
 }
@@ -201,6 +245,34 @@ else {
 updateStatus();
 }; //end init()
 $(document).ready(init);
+
+function startPosBtn()
+{
+	userCount = 1;
+	init(pgn,plyCount,userCount);
+}
+
+function lastPosBtn()
+{
+	userCount -= 1;
+	init(pgn,plyCount,userCount);
+}
+
+function nextPosBtn()
+{
+	if(userCount === plyCount)
+	{
+		userCount -= 1;
+	}
+	userCount += 1;
+	init(pgn,plyCount,userCount);
+}
+
+function endPosBtn()
+{
+	userCount = plyCount;
+	init(pgn,plyCount,userCount);
+}
   </script>
 			</div>
 			<div class="col-md-3">
@@ -216,31 +288,8 @@ $(document).ready(init);
 						border-radius: 25px;
 						}
 				</style>
-				<script>
-				function tableCreate(){
-					var body = document.body,
-					tbl  = document.createElement('table');
-					tbl.style.width='100%';
-					tbl.style.border = "1px solid black";
-
-					for(var i = 0; i < 3; i++){
-					var tr = tbl.insertRow();
-					for(var j = 0; j < 2; j++){
-					if(i==2 && j==1){
-						break
-					} else {
-						var td = tr.insertCell();
-						td.appendChild(document.createTextNode('\u0020'))
-					if(i==1&&j==1){
-						td.setAttribute('rowSpan','2');
-						}
-					}
-				}
-			  }	
-			body.appendChild(tbl);
-			}
-			</script>
-				<table class="table">
+			
+				<table id="moves-table" class="table">
 					<thead>
 					<tr>
 						<th>#</th>
@@ -271,6 +320,8 @@ $(document).ready(init);
 				  </tr>
 				 </tbody>
 				</table>
+				
+			<button type="button" class="btn btn-info" onClick="showNextMove()">Add Row</button>
 				
 				<!-- <p>FEN: <span id="fen"></span></p>
 				<p>PGN: <span id="pgn"></span></p> -->
@@ -304,7 +355,14 @@ $(document).ready(init);
 					<a href="#" class="list-group-item">Link</a>
 				</div>
 			  </div><!--/span-->
-			  
+			 <div id="comment-box">
+			 	<style>
+			 	.comment-box{
+			 		overflow:auto;
+			 		width:400px;
+			 	}
+			 	</style>
+			 	</div>
 			<div class="classy-buttons">
 			  <style>
 				.classy-buttons{
@@ -314,20 +372,20 @@ $(document).ready(init);
 				<div id="p2">
 				<table class = "table">
 					<tr> 
-						<button type="button" class="btn btn-default btn-sm" id="startPosBtn"> << </button>
+						<button type="button" class="btn btn-default btn-sm" onclick="startPosBtn()"> << </button>
 					</tr>
 					<tr> 
-						<button type="button" class="btn btn-default btn-sm" id="lastPosBtn"> < </button>
+						<button type="button" class="btn btn-default btn-sm" onclick="lastPosBtn()"> < </button>
 					</tr>
 					<tr> 
-						<button type="button" class="btn btn-default btn-sm" id= "nextPosBtn"> > </button>
+						<button type="button" class="btn btn-default btn-sm" onclick= "nextPosBtn()"> > </button>
 					</tr>
 					<tr> 
-						<button type="button" class="btn btn-default btn-sm" id= "endPosBtn"> >> </button>
+						<button type="button" class="btn btn-default btn-sm" onclick= "endPosBtn()"> >> </button>
 					</tr>
 			</div>
 	<!-- goose changes -->	  
-<style>
+<!--<style>
 p1
   {
   position:absolute;
@@ -349,9 +407,8 @@ p1
 
 <script src="js/chess.js"></script>
 
+</table> -->
 
-
-</table>
 </div>		
 			</div>
 		 </div><!--/row-->	     

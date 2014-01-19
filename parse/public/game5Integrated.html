@@ -43,13 +43,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="index.html">SoloChess</a>
+          <a class="navbar-brand" href="#">SoloChess</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             <li class="active"><a href="http://solochess.parseapp.com">Home</a></li>
             <li><a href="#about">About</a></li>
-          <li><a href="registration.html">Sign Up</a></li>
+            <li><a href="registration.html">Sign Up</a></li>
  <li><fb:login-button style="display:inline; margin-left:449%;" size="large" autologoutlink="true" max-rows="1" 
                   onlogin="require('./log').info('onlogin callback')">Login with Facebook</fb:login-button></li>          </ul>
         </div><!-- /.nav-collapse -->
@@ -78,10 +78,19 @@
 					<script src="js/jquery-1.10.1.min.js"></script>
 					<script src="js/chessboard.js"></script>
 					<script>
-						var init = function() {
+var startPlyCount = 11
+function truncatePGN(pgn,PlyCount) 
+{
+	var tempPGN = pgn
+
+}
+
+var init = function() {
+
 
 var tempGame = new Chess();
-pgn = ['[Event "Casual Game"]',
+
+fullPGN = ['[Event "Casual Game"]',
        '[Site "Berlin GER"]',
        '[Date "1852.??.??"]',
        '[EventDate "?"]',
@@ -99,14 +108,26 @@ pgn = ['[Event "Casual Game"]',
        'Bb6 14.Nbd2 Bb7 15.Ne4 Qf5 16.Bxd3 Qh5 17.Nf6+ gxf6 18.exf6',
        'Rg8 19.Rad1 Qxf3 20.Rxe7+ Nxe7 21.Qxd7+ Kxd7 22.Bf5+ Ke8',
        '23.Bd7+ 1-0'];
-console.log(pgn)
-var whoseMove = 'w';
+
+fullPlyCount = parseInt(fullPGN[11].substring(11,13),10);
+
+//startPGN = truncatePGN(pgn,17)
+
+if(startPlyCount % 2 === 0){
+	whoseMove = 'w'
+}
+else
+{
+	whoseMove = 'b'
+}
+
 var board,
   game = new Chess(),
   statusEl = $('#status'),
   fenEl = $('#fen'),
   pgnEl = $('#pgn');
-game.load_pgn(pgn.join('\n'));
+game.load_pgn(fullPGN.join('\n'));
+
 // do not pick up pieces if the game is over
 // only pick up pieces for the side to move
 var onDragStart = function(source, piece, position, orientation) {
