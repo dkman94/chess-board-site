@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
+	
+
+
+    <title>Off Canvas Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="dist/css/offcanvas.css" rel="stylesheet">
+	<link rel="stylesheet" href="css/chessboard.css" />
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  
+
+  <body>
+    <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Project name</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div><!-- /.nav-collapse -->
+      </div><!-- /.container -->
+    </div><!-- /.navbar -->
+  
+	<base href="http://chessboardjs.com/" />
+
+    <div class="container">
+
+      <div class="row row-offcanvas row-offcanvas-right">
+
+        <div class="col-xs-12 col-sm-9">
+          <p class="pull-right visible-xs">
+            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+          </p>
+          <div class="jumbotron">
+
+			<div id="board" style="width: 400px" align="center"></div>
+
+			<script src="js/json3.min.js"></script>
+			<script src="js/jquery-1.10.1.min.js"></script>
+			<script src="js/chessboard.js"></script>
+			<script>
+			
+var init = function() {
+
+var whoseMove = 'b'
+var castling = 'KQkq'
+var enpassante = '-'
+var halfmoves = '1'
+var fullmoves = '14'
+var position = {
+  a1: 'wR',
+  b3: 'wP',
+  c3: 'wB',
+  d4: 'wP',
+  e3: 'wP',
+  d1: 'wQ',
+  e1: 'wK',
+  f2: 'wP',
+  f3: 'wN',
+  f1: 'wB',
+  g2: 'wP',
+  h2: 'wP',
+  h1: 'wR',
+  a5: 'bP',
+  a8: 'bR',
+  b5: 'bP',
+  b7: 'bB',
+  b8: 'bN',
+  c4: 'bP',
+  d8: 'bQ',
+  e6: 'bP',
+  e8: 'bK',
+  f7: 'bP',
+  g8: 'bN',
+  g7: 'bP',
+  h7: 'bP',
+  h8: 'bR',
+};
+
+posFen = ChessBoard.objToFen(position)
+startFen = posFen + ' ' + whoseMove + ' ' + castling + ' ' + enpassante + ' ' + halfmoves + ' ' + fullmoves
+
+//document.write(startFen)
+
+var board,
+  game = new Chess(startFen),
+  //game.statusEl = 'White To Move'
+  //game.fen = 'rnbqkbnr/ppppp2p/5pp1/8/8/6PP/PPPPPP2/RNBQKBNR w KQkq - 0 3'
+  //game.pgnEL = '1.e4 e5'
+  statusEl = $('#status'),
+  fenEl = $('#fen'),
+  pgnEl = $('#pgn');
+
+//game.turn() = 'b'
+
+// do not pick up pieces if the game is over
+// only pick up pieces for the side to move
+var onDragStart = function(source, piece, position, orientation) {
+  if (game.game_over() === true ||
+      (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+      (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+    return false;
+  }
+};
+
+var onDrop = function(source, target) {
+  // see if the move is legal
+  var move = game.move({
+    from: source,
+    to: target,
+    promotion: 'q' // NOTE: always promote to a pawn for example simplicity
+  });
+
+  // illegal move
+  if (move === null) return 'snapback';
+
+  updateStatus();
+};
+
+// update the board position after the piece snap 
+// for castling, en passant, pawn promotion
+var onSnapEnd = function() {
+  board.position(game.fen());
+};
+
+var updateStatus = function() {
+  var status = '';
+
+  var moveColor = 'White';
+  if (game.turn() === 'b') {
+    moveColor = 'Black';
+  }
+
+  // checkmate?
+  if (game.in_checkmate() === true) {
+    status = 'Game over, ' + moveColor + ' is in checkmate.';
+  }
+
+  // draw?
+  else if (game.in_draw() === true) {
+    status = 'Game over, drawn position';
+  }
+
+  // game still on
+  else {
+    status = moveColor + ' to move';
+
+    // check?
+    if (game.in_check() === true) {
+      status += ', ' + moveColor + ' is in check';
+    }
+  }
+
+  statusEl.html(status);
+  fenEl.html(game.fen());
+  pgnEl.html(game.pgn());
+};
+
+var cfg = {
+  draggable: true,
+  position: position,
+  onDragStart: onDragStart,
+  onDrop: onDrop,
+  onSnapEnd: onSnapEnd
+};
+
+var board = new ChessBoard('board', cfg);
+
+updateStatus();
+}; //end init()
+$(document).ready(init);
+			</script>
+			
+<style>
+  p
+  {
+  position:absolute;
+  left:100px;
+  top:20px;
+  }
+  </style>
+<p><span id="status" ></span></p>
+<script src="js/chess.js"></script>
+<div id="board" style="width: 400px"></div>
+<!-- <p>FEN: <span id="fen"></span></p> -->
+<!-- <p>PGN: <span id="pgn"></span></p> -->
+
+        </div>
+          <div class="row">
+            <div class="col-md-8">
+            </div><!--/span-->
+          </div><!--/row-->
+        </div><!--/span-->
+
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+          <div class="list-group">
+            <a href="http://www.yahoo.com" class="list-group-item active">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+            <a href="#" class="list-group-item">Link</a>
+          </div>
+        </div><!--/span-->
+      </div><!--/row-->
+
+      <hr>
+
+      <footer>
+        <p1>&copy; PakGoosJonStev 2013</p1>
+      </footer>
+
+    </div><!--/.container-->
+	
+	
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script src="offcanvas.js"></script>
+  </body>
+</html>
